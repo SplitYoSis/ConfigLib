@@ -5,6 +5,7 @@ import dev.splityosis.configsystem.configsystem.logics.ActionsConfigLogic;
 import dev.splityosis.configsystem.configsystem.logics.ItemStackConfigLogic;
 import dev.splityosis.configsystem.configsystem.logics.LocationConfigLogic;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -38,7 +39,7 @@ public abstract class AnnotatedConfig {
 
     private static boolean isSetup = false;
 
-    public void initialize(){
+    public void initialize() throws IOException, InvalidConfigurationException {
         if (!isSetup){
             // On first time initialize
 
@@ -74,16 +75,15 @@ public abstract class AnnotatedConfig {
             parentDirectory.mkdirs();
         file = new File(parentDirectory, name+".yml");
         if (!file.exists()) {
-            try {
-                file.createNewFile();
-                config = YamlConfiguration.loadConfiguration(file);
-                saveToFile();
-                return;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            file.createNewFile();
+            config = new YamlConfiguration();
+            config.load(file);
+            saveToFile();
+            return;
         }
-        config = YamlConfiguration.loadConfiguration(file);
+        config = new YamlConfiguration();
+        config.load(file);
+
         writeMissingFields();
         updateFields();
         saveToFile();

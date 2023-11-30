@@ -12,7 +12,7 @@ import java.util.Map;
 public class RunConsoleCommandActionType extends ActionType {
 
     public RunConsoleCommandActionType() {
-        super("RUN_CONSOLE_COMMANDS", "CONSOLE_COMMAND", "RUN");
+        super("RUN_CONSOLE_COMMANDS", "CONSOLE_COMMANDS", "RUN", "RUN_CONSOLE_COMMAND");
     }
 
     @Override
