@@ -1,5 +1,9 @@
 package dev.splityosis.configsystem.configsystem.logics;
 
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTCompoundList;
+import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTListCompound;
 import dev.splityosis.configsystem.configsystem.ConfigTypeLogic;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -44,6 +48,13 @@ public class ItemStackConfigLogic extends ConfigTypeLogic<ItemStack> {
             SkullMeta meta = (SkullMeta) item.getItemMeta();
             meta.setOwner(config.getString(path + ".owner"));
             item.setItemMeta(meta);
+
+            String base64 = config.getString(path + ".base64");
+            if (base64 == null)
+                base64 = config.getString(path + ".skin");
+            if (base64 != null)
+                item = getSkull(base64);
+
         } else if(material.name().contains("POTION")) {
             item = new ItemStack(material, amount);
             PotionMeta meta = (PotionMeta) item.getItemMeta();
@@ -83,6 +94,7 @@ public class ItemStackConfigLogic extends ConfigTypeLogic<ItemStack> {
     @Override
     public void setInConfig(ItemStack instance, ConfigurationSection config, String path) {
         config.set(path + ".material", instance.getType().toString());
+        config.set(path + ".base64", getBase64(instance));
         config.set(path + ".amount", instance.getAmount());
 
         ItemMeta meta = instance.getItemMeta();
@@ -115,5 +127,31 @@ public class ItemStackConfigLogic extends ConfigTypeLogic<ItemStack> {
             ConfigurationSection enchantsSection = config.createSection(path + ".enchants");
             instance.getEnchantments().forEach((enchantment, integer) -> enchantsSection.set(enchantment.getKey().getKey(), integer));
         }
+    }
+
+    public static ItemStack getSkull(String base64){
+        NBTItem nbtItem = new NBTItem(new ItemStack(Material.PLAYER_HEAD));
+        NBTCompound skull = nbtItem.addCompound("SkullOwner");
+        skull.setString("Id", UUID.randomUUID().toString());
+        NBTListCompound texture = skull.addCompound("Properties").getCompoundList("textures").addCompound();
+        texture.setString("Value", base64);
+        return nbtItem.getItem();
+    }
+
+    public static String getBase64(ItemStack itemStack){
+        NBTItem nbtItem = new NBTItem(itemStack);
+        NBTCompound skull = nbtItem.getCompound("SkullOwner");
+        if (skull == null) return null;
+        NBTCompound properties = skull.addCompound("Properties");
+        if (properties == null)
+            return null;
+        NBTCompoundList textures = properties.getCompoundList("textures");
+        if (textures == null || textures.size() == 0)
+            return null;
+        NBTListCompound texture = textures.get(0);
+        String value = texture.getString("Value");
+        if (value == null || value.isEmpty())
+            return null;
+        return value;
     }
 }
