@@ -39,7 +39,7 @@ public abstract class AnnotatedConfig {
 
     private static boolean isSetup = false;
 
-    public void initialize() throws IOException, InvalidConfigurationException {
+    public AnnotatedConfig initialize() throws IOException, InvalidConfigurationException {
         if (!isSetup){
             // On first time initialize
 
@@ -67,6 +67,8 @@ public abstract class AnnotatedConfig {
             new ActionBarActionType().register();
             new ActionBarAllActionType().register();
 
+            new DelayActionType().register();
+
             isSetup = true;
         }
 
@@ -79,7 +81,7 @@ public abstract class AnnotatedConfig {
             config = new YamlConfiguration();
             config.load(file);
             saveToFile();
-            return;
+            return this;
         }
         config = new YamlConfiguration();
         config.load(file);
@@ -87,6 +89,8 @@ public abstract class AnnotatedConfig {
         writeMissingFields();
         updateFields();
         saveToFile();
+
+        return this;
     }
 
     public void saveToFile(){
@@ -161,6 +165,22 @@ public abstract class AnnotatedConfig {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public FileConfiguration getConfig() {
+        return config;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public File getParentDirectory() {
+        return parentDirectory;
     }
 
     private void setConfigSectionInConfig(String path, ConfigSectionHandler<?> configSection){
