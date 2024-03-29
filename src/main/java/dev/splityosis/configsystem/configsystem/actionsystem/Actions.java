@@ -5,6 +5,7 @@ import dev.splityosis.configsystem.configsystem.actionsystem.actiontypes.DelayAc
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -40,9 +41,10 @@ public class Actions {
     /**
      * Runs all the actions where the target is the given player and sets PlaceholderAPI (if exists) on given player.
      * @param player Target
+     * @param placeholders Placeholders that will be set, Map in the form of <From, To>
      */
-    public void perform(@Nullable Player player){
-        perform(player, null);
+    public void perform(@Nullable Player player, @NotNull Map<String, String> placeholders){
+        perform(player, new Map[]{placeholders});
     }
 
     private void handle(int i, Player player, Map<String, String> placeholders){
@@ -77,7 +79,7 @@ public class Actions {
 
 
     /**
-     * Runs the same logic as {@link #perform(Player)} on all the players online.
+     * Runs the same logic as {perform} on all the players online.
      */
     public void performOnAll(@Nullable Map<String, String>... placeholders){
         Map<String, String> replacements = new HashMap<>();
@@ -87,6 +89,20 @@ public class Actions {
                     replacements.putAll(placeholder);
             }
         handleAll(0, replacements);
+    }
+
+    /**
+     * Runs the same logic as {@link #perform(Player)} on all the players online.
+     */
+    public void performOnAll(@Nullable Map<String, String> placeholders){
+        performOnAll(new Map[]{placeholders});
+    }
+
+    /**
+     * Runs the same logic as {@link #perform(Player)} on all the players online.
+     */
+    public void performOnAll(){
+        performOnAll();
     }
 
     public void handleAll(int i, Map<String, String> placeholders){
@@ -119,13 +135,6 @@ public class Actions {
                     actionType.run(onlinePlayer, actionData.getParameters(), placeholders);
                 }
         }
-    }
-
-    /**
-     * Runs the same logic as {@link #perform(Player)} on all the players online.
-     */
-    public void performOnAll(){
-        performOnAll(null);
     }
 
     public List<ActionData> getActionDataList() {
