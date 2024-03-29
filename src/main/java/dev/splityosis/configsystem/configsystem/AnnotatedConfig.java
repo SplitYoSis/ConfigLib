@@ -39,7 +39,7 @@ public abstract class AnnotatedConfig {
 
     private static boolean isSetup = false;
 
-    public AnnotatedConfig initialize() throws IOException, InvalidConfigurationException {
+    public void initialize() throws IOException, InvalidConfigurationException {
         if (!isSetup){
             // On first time initialize
 
@@ -81,7 +81,7 @@ public abstract class AnnotatedConfig {
             config = new YamlConfiguration();
             config.load(file);
             saveToFile();
-            return this;
+            return;
         }
         config = new YamlConfiguration();
         config.load(file);
@@ -90,7 +90,7 @@ public abstract class AnnotatedConfig {
         updateFields();
         saveToFile();
 
-        return this;
+        return;
     }
 
     public void saveToFile(){
