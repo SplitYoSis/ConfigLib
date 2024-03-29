@@ -5,7 +5,6 @@ import dev.splityosis.configsystem.configsystem.actionsystem.actiontypes.DelayAc
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -28,23 +27,18 @@ public class Actions {
      * @param player Target
      * @param placeholders Placeholders that will be set, Map in the form of <From, To>
      */
-    public void perform(@Nullable Player player, @Nullable Map<String, String>... placeholders){
-        Map<String, String> replacements = new HashMap<>();
-        if (placeholders != null)
-            for (Map<String, String> placeholder : placeholders) {
-                if (placeholder != null)
-                    replacements.putAll(placeholder);
-            }
-        handle(0, player, replacements);
+    public void perform(@Nullable Player player, @Nullable Map<String, String> placeholders){
+        if (placeholders == null)
+            placeholders = new HashMap<>();
+        handle(0, player, placeholders);
     }
 
     /**
      * Runs all the actions where the target is the given player and sets PlaceholderAPI (if exists) on given player.
      * @param player Target
-     * @param placeholders Placeholders that will be set, Map in the form of <From, To>
      */
-    public void perform(@Nullable Player player, @NotNull Map<String, String> placeholders){
-        perform(player, new Map[]{placeholders});
+    public void perform(@Nullable Player player){
+        perform(player, null);
     }
 
     private void handle(int i, Player player, Map<String, String> placeholders){
@@ -81,28 +75,17 @@ public class Actions {
     /**
      * Runs the same logic as {perform} on all the players online.
      */
-    public void performOnAll(@Nullable Map<String, String>... placeholders){
-        Map<String, String> replacements = new HashMap<>();
-        if (placeholders != null)
-            for (Map<String, String> placeholder : placeholders) {
-                if (placeholder != null)
-                    replacements.putAll(placeholder);
-            }
-        handleAll(0, replacements);
-    }
-
-    /**
-     * Runs the same logic as {@link #perform(Player)} on all the players online.
-     */
     public void performOnAll(@Nullable Map<String, String> placeholders){
-        performOnAll(new Map[]{placeholders});
+        if (placeholders == null)
+            placeholders = new HashMap<>();
+        handleAll(0, placeholders);
     }
 
     /**
      * Runs the same logic as {@link #perform(Player)} on all the players online.
      */
     public void performOnAll(){
-        performOnAll();
+        performOnAll(null);
     }
 
     public void handleAll(int i, Map<String, String> placeholders){
